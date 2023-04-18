@@ -12,3 +12,8 @@ Automatically scrap all the course information by URL and save in .pickle format
 # load.py
 
 load the saved .pickle files
+
+# gpt_api.py
+
+use the official openai api to set up connection with chatgpt.
+pip install openai
