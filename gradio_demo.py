@@ -3,6 +3,8 @@ import argparse
 import gradio as gr
 from conversationbot import ConversationBot
 
+os.environ["OPENAI_API_KEY"] = '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'
+
 if __name__ == '__main__':
     if not os.path.exists("checkpoints"):
         os.mkdir("checkpoints")
@@ -10,9 +12,9 @@ if __name__ == '__main__':
     #edit here about tools
     parser.add_argument('--load', type=str, default="ImageCaptioning_cuda:0,Text2Image_cuda:0")
     args = parser.parse_args()
-    load_dict = {e.split('_')[0].strip(): e.split('_')[1].strip() for e in args.load.split(',')}
+    subtask_models_cfg = {e.split('_')[0].strip(): e.split('_')[1].strip() for e in args.load.split(',')}
     #
-    bot = ConversationBot(load_dict=load_dict)
+    bot = ConversationBot(subtask_models_cfg=subtask_models_cfg)
     with gr.Blocks(css="#chatbot .overflow-y-auto{height:500px}") as demo:
         lang = gr.Radio(choices = ['Chinese','English'], value=None, label='Language')
         chatbot = gr.Chatbot(elem_id="chatbot", label="UST Agent")
