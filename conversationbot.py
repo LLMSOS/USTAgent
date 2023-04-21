@@ -16,18 +16,7 @@ from langchain.agents.tools import Tool
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.llms.openai import OpenAI
 
-from tools_utils import prompts
-
-class ToolName:
-    def __init__(self):
-        # write the initialization code here
-        # according to your design
-        pass
-
-    @prompts(name="THE TOOLS MEANINGFUL NAME",
-             description="THE TOOLS MEANINGFUL DESCRIPTION")
-    def forward(self, inputs):
-        pass
+from predefined_prompts import UST_AGENT_FORMAT_INSTRUCTIONS, UST_AGENT_PREFIX, UST_AGENT_SUFFIX
 
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
     if history_memory is None or len(history_memory) == 0:
@@ -70,4 +59,23 @@ class ConversationBot:
         self.llm = OpenAI(temperature=0)
         self.memory = ConversationBufferMemory(memory_key="chat_history", output_key='output')
 
-    
+    def init_agent(self, lang):
+        self.memory.clear()
+        if lang == "English":
+            PREFIX = UST_AGENT_PREFIX
+            FORMAT_INSTRUCTIONS = UST_AGENT_FORMAT_INSTRUCTIONS
+            SUFFIX = UST_AGENT_SUFFIX
+            place = "Enter text and press enter"
+            label_clear = "Clear"
+        else:
+            raise NotImplementedError(f"Language {lang} is not supported yet.")
+        
+        self.agent = initialize_agent(
+            tools=self.tools,
+            llm=self.llm,
+            agent="conversational-react-description",
+            memory=self.memory,
+            return_intermediate_steps=True,
+            agent_kwargs={'prefix': PREFIX, 'format_instructions': FORMAT_INSTRUCTIONS,
+                          'suffix': SUFFIX}, )
+        return gr.update(visible = True), gr.update(visible = False), gr.update(placeholder=place), gr.update(value=label_clear)
