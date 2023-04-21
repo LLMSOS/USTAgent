@@ -79,3 +79,13 @@ class ConversationBot:
             agent_kwargs={'prefix': PREFIX, 'format_instructions': FORMAT_INSTRUCTIONS,
                           'suffix': SUFFIX}, )
         return gr.update(visible = True), gr.update(visible = False), gr.update(placeholder=place), gr.update(value=label_clear)
+    
+    def run_text(self, text, state):
+        self.agent.memory.buffer = cut_dialogue_history(self.agent.memory.buffer, keep_last_n_words=500)
+        res = self.agent({"input": text.strip()})
+        response = res['output']
+        state = state + [(text, response)]
+        print(f"\nProcessed run_text, Input text: {text}\nCurrent state: {state}\n"
+              f"Current Memory: {self.agent.memory.buffer}")
+        
+        return state, state
