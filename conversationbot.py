@@ -13,8 +13,9 @@ import inspect
 
 from langchain.agents.initialize import initialize_agent
 from langchain.agents.tools import Tool
-from langchain.chains.conversation.memory import ConversationBufferMemory
+from langchain.chains.conversation.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langchain.llms.openai import OpenAI
+from langchain.chat_models import ChatOpenAI
 
 from predefined_prompts import UST_AGENT_FORMAT_INSTRUCTIONS, UST_AGENT_PREFIX, UST_AGENT_SUFFIX
 
@@ -62,8 +63,8 @@ class ConversationBot:
                 tool = model.forward
                 self.tools.append(Tool(name=tool.name, description=tool.description, func=tool))
 
-        self.llm = OpenAI(temperature=0)
-        self.memory = ConversationBufferMemory(memory_key="chat_history", output_key='output')
+        self.llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo")
+        self.memory = ConversationSummaryBufferMemory(llm=OpenAI(temperature=0), memory_key="chat_history", output_key='output')
 
     def init_agent(self, lang):
         self.memory.clear()
@@ -83,11 +84,13 @@ class ConversationBot:
             memory=self.memory,
             return_intermediate_steps=True,
             agent_kwargs={'prefix': PREFIX, 'format_instructions': FORMAT_INSTRUCTIONS,
-                          'suffix': SUFFIX}, )
+                          'suffix': SUFFIX}, 
+            verbose=True)
         return gr.update(visible = True), gr.update(visible = False), gr.update(placeholder=place), gr.update(value=label_clear)
     
     def run_text(self, text, state):
-        self.agent.memory.buffer = cut_dialogue_history(self.agent.memory.buffer, keep_last_n_words=500)
+        # self.agent.memory.buffer = cut_dialogue_history(self.agent.memory.buffer, keep_last_n_words=500)
+        # import ipdb; ipdb.set_trace()
         res = self.agent({"input": text.strip()})
         response = res['output']
         state = state + [(text, response)]

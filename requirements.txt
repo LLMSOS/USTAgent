@@ -1,0 +1,7 @@
+langchain
+gradio
+numpy
+opencv-python
+openai
+charset_normalizer
+tiktoken
