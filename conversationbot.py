@@ -18,6 +18,9 @@ from langchain.llms.openai import OpenAI
 
 from predefined_prompts import UST_AGENT_FORMAT_INSTRUCTIONS, UST_AGENT_PREFIX, UST_AGENT_SUFFIX
 
+# import tools
+from load_courseinfo.load import LoadGivenCourses
+
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
     if history_memory is None or len(history_memory) == 0:
         return history_memory
@@ -39,12 +42,15 @@ class ConversationBot:
     """
 
     def __init__(self,
-                 subtask_models_cfg):
+                 subtask_models_cfg=dict(LoadGivenCourses=None)):
         self.subtask_models_cfg = subtask_models_cfg
         self.subtask_models = {}
         # instantiate the required subtask models as a global variable
         for subtask_model_name, subtask_model_cfg in subtask_models_cfg.items():
-            self.subtask_models[subtask_model_name] = globals()[subtask_model_name](**subtask_model_cfg)
+            if subtask_model_cfg is None or len(subtask_model_cfg) == 0:
+                self.subtask_models[subtask_model_name] = globals()[subtask_model_name]()
+            else:
+                self.subtask_models[subtask_model_name] = globals()[subtask_model_name](**subtask_model_cfg)
 
         print(f"All the Available Functions: {self.subtask_models}")
 

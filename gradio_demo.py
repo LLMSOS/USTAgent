@@ -10,7 +10,7 @@ if __name__ == '__main__':
         os.mkdir("checkpoints")
     parser = argparse.ArgumentParser()
     #edit here about tools
-    parser.add_argument('--load', type=str, default="ImageCaptioning_cuda:0,Text2Image_cuda:0")
+    parser.add_argument('--load', type=str, default="LoadGivenCourses_")
     args = parser.parse_args()
     subtask_models_cfg = {e.split('_')[0].strip(): e.split('_')[1].strip() for e in args.load.split(',')}
     #
