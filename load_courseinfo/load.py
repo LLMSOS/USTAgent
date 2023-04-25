@@ -3,7 +3,7 @@ import pickle
 import os
 from pathlib import Path
 import re
-
+from platform import platform
 from tools_utils import prompts
 
 class LoadGivenCourses:
@@ -15,8 +15,12 @@ class LoadGivenCourses:
         "COMP 2011", "COMP2011", "comp 2011", "comp2011"
     """
     def __init__(self, 
-                 all_courses_file_path='load_courseinfo\Courseinfo\AllCourses.pickle') -> None:
+                all_courses_file_path='load_courseinfo\Courseinfo\AllCourses.pickle') -> None:
         self.all_courses_file_path = os.path.join(Path.cwd(), all_courses_file_path)
+        if 'mac' in platform():
+            self.all_courses_file_path = self.all_courses_file_path.replace('\\', '/')
+        # print(self.all_courses_file_path)
+        # print('/Users/liuhanmo/Library/CloudStorage/OneDrive-HKUSTConnect/USTAgent/USTAgent/load_courseinfo/Courseinfo/AllCourses.pickle')
         assert os.path.exists(self.all_courses_file_path), "AllCourses.pickle file not found."
         print("LoadGivenCourses Tool has been set up."
               "Using file information from " + self.all_courses_file_path + ".")
