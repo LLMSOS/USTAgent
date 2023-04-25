@@ -22,6 +22,8 @@ from predefined_prompts import UST_AGENT_FORMAT_INSTRUCTIONS, UST_AGENT_PREFIX, 
 # import tools
 from load_courseinfo.load import LoadGivenCourses
 
+os.environ["OPENAI_API_KEY"] = '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'
+
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
     if history_memory is None or len(history_memory) == 0:
         return history_memory
@@ -79,7 +81,7 @@ class ConversationBot:
         
         self.agent = initialize_agent(
             tools=self.tools,
-            llm=self.llm,
+            llm=self.llm, # TODO: change the llm to https://github.com/FreedomIntelligence/LLMZoo
             agent="conversational-react-description",
             memory=self.memory,
             return_intermediate_steps=True,
@@ -90,7 +92,6 @@ class ConversationBot:
     
     def run_text(self, text, state):
         # self.agent.memory.buffer = cut_dialogue_history(self.agent.memory.buffer, keep_last_n_words=500)
-        # import ipdb; ipdb.set_trace()
         res = self.agent({"input": text.strip()})
         response = res['output']
         state = state + [(text, response)]
@@ -98,3 +99,13 @@ class ConversationBot:
               f"Current Memory: {self.agent.memory.buffer}")
         
         return state, state
+    
+if __name__ == "__main__":
+    llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo")
+    tool = LoadGivenCourses()
+    courses = tool.forward('comp2011, comp3211, math2011')
+    inputs = f'help me to show the courses\' sections into a table: {courses}'
+    print(inputs)
+    out = llm(inputs)
+    with open('test.txt', 'w') as f:
+        f.write(out)
