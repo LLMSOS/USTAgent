@@ -2,7 +2,6 @@
 import os
 import gradio as gr
 import random
-import torch
 import cv2
 import re
 import uuid
@@ -16,13 +15,15 @@ from langchain.agents.tools import Tool
 from langchain.chains.conversation.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langchain.llms.openai import OpenAI
 from langchain.chat_models import ChatOpenAI
+from langchain.base_language import BaseLanguageModel
+from gpt4f_llm import GPT4F_LLM
 
 from predefined_prompts import UST_AGENT_FORMAT_INSTRUCTIONS, UST_AGENT_PREFIX, UST_AGENT_SUFFIX
 
 # import tools
 from load_courseinfo.load import LoadGivenCourses
 
-os.environ["OPENAI_API_KEY"] = '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'
+os.environ["OPENAI_API_KEY"] = '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'
 
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
     if history_memory is None or len(history_memory) == 0:
@@ -65,8 +66,14 @@ class ConversationBot:
                 tool = model.forward
                 self.tools.append(Tool(name=tool.name, description=tool.description, func=tool))
 
-        self.llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo")
+        # self.llm = OpenAI(temperature=0)
+        # self.llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo")
+        self.llm = GPT4F_LLM(model_name='theb')
+        assert isinstance(self.llm, BaseLanguageModel)
         self.memory = ConversationSummaryBufferMemory(llm=OpenAI(temperature=0), memory_key="chat_history", output_key='output')
+
+    def clear(self):
+        self.memory.clear()
 
     def init_agent(self, lang):
         self.memory.clear()
