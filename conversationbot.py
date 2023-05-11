@@ -17,6 +17,8 @@ from langchain.llms.openai import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.base_language import BaseLanguageModel
 from gpt4f_llm import GPT4F_LLM
+from langchain.llms import GPT4All
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from predefined_prompts import UST_AGENT_FORMAT_INSTRUCTIONS, UST_AGENT_PREFIX, UST_AGENT_SUFFIX
 
@@ -69,6 +71,8 @@ class ConversationBot:
         # self.llm = OpenAI(temperature=0)
         # self.llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo")
         self.llm = GPT4F_LLM(model_name='theb')
+        # callbacks = [StreamingStdOutCallbackHandler()]
+        # self.llm = GPT4All(model="D:\gpt4all\models\ggml-gpt4all-j-v1.3-groovy.bin", backend='gptj', verbose=True, n_threads=8)
         assert isinstance(self.llm, BaseLanguageModel)
         self.memory = ConversationSummaryBufferMemory(llm=OpenAI(temperature=0), memory_key="chat_history", output_key='output')
 
