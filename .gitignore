@@ -3,3 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 **/*.pyc
+
+*.ipynb_checkpoints
+*.ipynb
+test.py
+json_agent/
+json_tool/

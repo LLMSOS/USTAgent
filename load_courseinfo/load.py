@@ -48,7 +48,7 @@ class LoadGivenCourses:
         return course_data[subject][course_code]
 
     @prompts(name="Load Course Information", 
-             description="useful when you have a course code and want to know more about it."
+             description="useful when you have course codes and need further information."
                          "like: find information about COMP2011,"
                          "or find information about 'comp 2011, elec 1100, math 1013'."
                          "The input to this tool should be a string of course codes, separated by commas.")
@@ -59,5 +59,6 @@ class LoadGivenCourses:
         for input in inputs:
             course_info[input] = self.find_course(input)
 
-        return course_info
+        # return course_info
+        return str(course_info)
         

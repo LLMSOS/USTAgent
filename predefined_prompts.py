@@ -16,22 +16,48 @@ TOOLS:
 UST Agent has access to the following tools:
 """
 
-UST_AGENT_FORMAT_INSTRUCTIONS = """To use a tool, please use the following format:
+UST_AGENT_FORMAT_INSTRUCTIONS = """RESPONSE FORMAT INSTRUCTIONS
+----------------------------
 
-```
-Thought: Do I need to use a tool? Yes
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action
+When you need a tool to respond to the Human, you MUST use the format:
+
+Thought: Reason about what action to take next, and whether to use a tool.
+Action: The tool to use. MUST be one of: [{tool_names}]
+Action Input: The input to the tool
 Observation: the result of the action
-```
+
+For example:
+
+Thought: I need to find the course information for COMP 1021, I need to use a tool.
+Action: LoadGivenCourses
+Action Input: COMP1021
+Observation: the dictionary string of course information
 
 When you have a response to say to the Human, or need to ask the Human to provide more information, or if you do not need to use a tool, you MUST use the format:
 
-```
-Thought: Do I need to use a tool? No
+Thought: I need feedback from human to continue. I don't need to use a tool.
 {ai_prefix}: [your response here]
-```
+
 """
+
+
+
+# UST_AGENT_FORMAT_INSTRUCTIONS = """To use a tool, please use the following format:
+
+# ```
+# Thought: Do I need to use a tool? Yes
+# Action: the action to take, should be one of [{tool_names}]
+# Action Input: the input to the action
+# Observation: the result of the action
+# ```
+
+# When you have a response to say to the Human, or need to ask the Human to provide more information, or if you do not need to use a tool, you MUST use the format:
+
+# ```
+# Thought: Do I need to use a tool? No
+# {ai_prefix}: [your response here]
+# ```
+# """
 
 UST_AGENT_SUFFIX = """You are very strict to the information correctness and will never fake any information that is not provided to you.
 You will remember to provide the information loyally if it's provided in the last tool observation.
