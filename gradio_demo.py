@@ -3,7 +3,7 @@ import argparse
 import gradio as gr
 from conversationbot import ConversationBot
 
-os.environ["OPENAI_API_KEY"] = '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'
+os.environ["OPENAI_API_KEY"] = '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'
 
 if __name__ == '__main__':
     if not os.path.exists("checkpoints"):
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('--load', type=str, default="LoadGivenCourses_")
     args = parser.parse_args()
     subtask_models_cfg = {e.split('_')[0].strip(): e.split('_')[1].strip() for e in args.load.split(',')}
-    #
+    
     bot = ConversationBot(subtask_models_cfg=subtask_models_cfg)
     with gr.Blocks(css="#chatbot .overflow-y-auto{height:500px}") as demo:
         lang = gr.Radio(choices = ['Chinese','English'], value=None, label='Language')
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         lang.change(bot.init_agent, [lang], [input_raws, lang, txt, clear])
         txt.submit(bot.run_text, [txt, state], [chatbot, state])
         txt.submit(lambda: "", None, txt)
-        clear.click(bot.memory.clear)
+        clear.click(bot.clear())
         clear.click(lambda: [], None, chatbot)
         clear.click(lambda: [], None, state)
     demo.launch(server_name="0.0.0.0", server_port=7860)
