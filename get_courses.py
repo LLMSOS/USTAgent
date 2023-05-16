@@ -5,7 +5,7 @@ import pickle
 import os
 from pathlib import Path
 
-course_codes = ['ACCT','AESF','AIAA','AMAT','BIBU','BIEN','BSBE','BTEC','CBME','CENG','CHEM','CHMS','CIEM','CIVL','CMAA','COMP','CORE','CPEG','CSIC','CSIT','DASC','DBAP','DSAA','DSCT','ECON','EEMT','EESM','ELEC','EMBA','EMIA','ENEG','ENGG','ENTR','ENVR','ENVS','EOAS','EVNG','EVSM','FINA','FTEC','GBUS','GFIN','GNED','HLTH','HMMA','HUMA','IBTM','IDPO','IEDA','IIMP','IMBA','INTR','IOTA','IPEN','ISDN','ISOM','JEVE','LABU','LANG','LIFS','MAED','MAFS','MARK','MASS','MATH','MECH','MESF','MFIT','MGCS','MGMT','MICS','MILE','MIMT','MSBD','MSDM','MTLE','NANO','OCES','PDEV','PHYS','PPOL','RMBI','ROAS','SBMT','SCIE','SEEN','SHSS','SMMG','SOSC','SUST','TEMG','UGOD','UROP','WBBA']
+ALL_COURSES = ['ACCT','AESF','AIAA','AMAT','BIBU','BIEN','BSBE','BTEC','CBME','CENG','CHEM','CHMS','CIEM','CIVL','CMAA','COMP','CORE','CPEG','CSIC','CSIT','DASC','DBAP','DSAA','DSCT','ECON','EEMT','EESM','ELEC','EMBA','EMIA','ENEG','ENGG','ENTR','ENVR','ENVS','EOAS','EVNG','EVSM','FINA','FTEC','GBUS','GFIN','GNED','HLTH','HMMA','HUMA','IBTM','IDPO','IEDA','IIMP','IMBA','INTR','IOTA','IPEN','ISDN','ISOM','JEVE','LABU','LANG','LIFS','MAED','MAFS','MARK','MASS','MATH','MECH','MESF','MFIT','MGCS','MGMT','MICS','MILE','MIMT','MSBD','MSDM','MTLE','NANO','OCES','PDEV','PHYS','PPOL','RMBI','ROAS','SBMT','SCIE','SEEN','SHSS','SMMG','SOSC','SUST','TEMG','UGOD','UROP','WBBA']
 
 
 def get_soup(url):
@@ -89,12 +89,12 @@ def extract_course_data(soup):
 
 
 # Use this function to get courses information and sections
-def crawl_website(course_codes):
+def crawl_website(course_codes=ALL_COURSES, upper_url='https://w5.ab.ust.hk/wcq/cgi-bin/2230/subject/'):
     courses_info = pd.DataFrame()
     courses_section = pd.DataFrame()
     for course_code in course_codes:
         # 2230 for 2022-2023 Spring, and 2240 for 2022-2023 Summer
-        url = 'https://w5.ab.ust.hk/wcq/cgi-bin/2230/subject/' + course_code
+        url = upper_url + course_code
         soup = get_soup(url)
         if soup:
             course_info, course_section = extract_course_data(soup)
@@ -102,11 +102,6 @@ def crawl_website(course_codes):
             courses_section = courses_section.where(pd.notnull(courses_section), None)
             courses_info = pd.concat([courses_info, course_info], axis=0, ignore_index=True, sort=False)
             courses_info = courses_info.where(pd.notnull(courses_info), None)
-            
-    # courses_info.to_csv('courses_info.csv')
-    # print("Courses information successfully saved in courses_info.csv")
-    # courses_section.to_csv('courses_section.csv')
-    # print("Courses sections successfully saved in courses_section.csv")
 
     return courses_info, courses_section
 

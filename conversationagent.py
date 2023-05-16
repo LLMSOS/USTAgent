@@ -1,29 +1,16 @@
 # coding: utf-8
 import os
 import gradio as gr
-import random
-import cv2
-import re
-import uuid
-from PIL import Image, ImageDraw, ImageOps, ImageFont
-import math
-import numpy as np
-import inspect
+from datetime import datetime
+import time
+import pandas as pd
 
-from langchain.agents.initialize import initialize_agent
-from langchain.agents.tools import Tool
-from langchain.chains.conversation.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
+from langchain.chains.conversation.memory import ConversationSummaryBufferMemory
 from langchain.llms.openai import OpenAI
-from langchain.chat_models import ChatOpenAI
-from langchain.base_language import BaseLanguageModel
-from gpt4f_llm import GPT4F_LLM
-from langchain.llms import GPT4All
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
-from predefined_prompts import UST_AGENT_FORMAT_INSTRUCTIONS, UST_AGENT_PREFIX, UST_AGENT_SUFFIX
-
-# import tools
-from load_courseinfo.load import LoadGivenCourses
+# import tools for extract information
+from get_courses import crawl_website
+from get_events import get_events_by_dates
 
 os.environ["OPENAI_API_KEY"] = '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'
 
@@ -39,7 +26,7 @@ class ConversationAgent:
     """
 
     def __init__(self,
-                 task = "courses"):
+                 task: str=None):
         self.current_task = task
         
         self.llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo")
@@ -52,14 +39,44 @@ class ConversationAgent:
     def clear(self):
         self.memory.clear()
 
-    def init_agent(self, task):
+    def init_agent(self, task, force_reload=False):
         self.memory.clear()
         place = "Enter text and press enter"
         label_clear = "Clear"
         if self.agent is not None:
-            print(f"Agent will be re-initialized to task {task}.")
+            print(f"Agent changed from task {self.current_task} to task {task}.")
         # TODO: initialize agent according to task
-
+        self.current_task = task
+        dataframes = []
+        start_time = time.time()
+        if task == "courses":
+            info_path = os.path.join(os.getcwd(), "data", "courses_info.csv")
+            section_path = os.path.join(os.getcwd(), "data", "courses_section.csv")
+            if os.path.exists(info_path) and os.path.exists(section_path) and not force_reload:
+                info_dataframe = pd.read_csv(info_path)
+                section_dataframe = pd.read_csv(section_path)
+            else:
+                info_dataframe, section_dataframe = crawl_website()
+                info_dataframe.to_csv(info_path, index=False)
+                section_dataframe.to_csv(section_path, index=False)
+            dataframes.append(info_dataframe)
+            dataframes.append(section_dataframe)
+        elif task == "events":
+            # get the date of today
+            today = datetime.today().strftime('%Y-%m-%d')
+            period = 15
+            # get the events of the next 15 days
+            path = os.path.join(os.getcwd(), "data", f"events_{today}_to_{period}days.csv")
+            if os.path.exists(path) and not force_reload:
+                events = pd.read_csv(path)
+            else:
+                events = get_events_by_dates(today, period)
+                events.to_csv(path, index=False)
+            dataframes.append(events)
+        else:
+            raise ValueError(f"Task {task} is not supported yet.")
+        cost = time.time() - start_time
+        print(f"Time cost for crawling data: {cost}")
         return gr.update(visible = True), gr.update(visible = False), gr.update(placeholder=place), gr.update(value=label_clear)
     
     def run_text(self, text, state):
@@ -71,3 +88,7 @@ class ConversationAgent:
         
         return state, state
     
+
+if __name__ == "__main__":
+    agent = ConversationAgent()
+    agent.init_agent("courses")
