@@ -9,3 +9,5 @@ __pycache__/
 test.py
 json_agent/
 json_tool/
+data/
+test.ipynb
