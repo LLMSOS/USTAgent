@@ -31,7 +31,7 @@ def parse_date_time(str):
         return found_time
 
 
-def get_course_dataframes(path):
+def get_course_dataframes(section_path, info_path):
     '''
     Return the dataframes for course section and course info
     path: str, path to the data folder
@@ -41,11 +41,11 @@ def get_course_dataframes(path):
     pd.set_option('display.max_rows', None)
     # pd.set_option('max_colwidth', 100)
 
-    course_section_path = path + 'courses_section.csv'
-    df_course_section = pd.read_csv(course_section_path).iloc[:, 1:]
+    course_section_path = section_path
+    df_course_section = pd.read_csv(course_section_path)
 
-    course_info_path = path + 'courses_info.csv'
-    df_course_info = pd.read_csv(course_info_path).iloc[:, 1:]
+    course_info_path = info_path
+    df_course_info = pd.read_csv(course_info_path)
 
     # df1 = pd.read_csv('data/courses_section.csv').iloc[:, 1:]
     # df2 = pd.read_csv('data/courses_info.csv').iloc[:, 1:]
@@ -68,8 +68,8 @@ def get_event_dataframes(path):
     pd.set_option('display.max_rows', None)
     # pd.set_option('max_colwidth', 100)
 
-    event_path = path + 'events_info.csv'
-    df = pd.read_csv(event_path).iloc[:, 1:]
+    event_path = path
+    df = pd.read_csv(event_path)
 
     df["Performer Name"] = df["Performer Name"].replace("The Hong Kong University of Science and Technology", "HKUST")
     # df.drop('Description', axis=1, inplace=True)
