@@ -37,10 +37,6 @@ def extract_course_data(soup):
             if th and td:
                 course_info[th.text] = td.text
 
-        # Print the extracted information
-        #print(course_info)
-        
-        
         # Extract the 'sections' table
         table = course.find('table', class_='sections')
         
@@ -86,16 +82,24 @@ def extract_course_data(soup):
     return course_data, course_section
 
 
-
-
-# Use this function to get courses information and sections
 def crawl_website(course_codes=ALL_COURSES, upper_url='https://w5.ab.ust.hk/wcq/cgi-bin/2230/subject/'):
+    """ Crawl the HKUST course website and extract the course information and sections.
+    
+        Use this function to get courses information and sections
+        Sample usage:
+            courses_info, courses_section = crawl_website(course_codes)
+    
+    """
     courses_info = pd.DataFrame()
     courses_section = pd.DataFrame()
     for course_code in course_codes:
         # 2230 for 2022-2023 Spring, and 2240 for 2022-2023 Summer
         url = upper_url + course_code
-        soup = get_soup(url)
+        try:
+            soup = get_soup(url)
+        except:
+            print(f'Error in {course_code}')
+            continue
         if soup:
             course_info, course_section = extract_course_data(soup)
             courses_section = pd.concat([courses_section, course_section], axis=0, ignore_index=True, sort=False)
@@ -104,6 +108,3 @@ def crawl_website(course_codes=ALL_COURSES, upper_url='https://w5.ab.ust.hk/wcq/
             courses_info = courses_info.where(pd.notnull(courses_info), None)
 
     return courses_info, courses_section
-
-# Sample usage:
-# courses_info, courses_section = crawl_website(course_codes)
