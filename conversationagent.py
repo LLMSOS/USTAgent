@@ -11,6 +11,7 @@ from langchain.llms.openai import OpenAI
 # import tools for extract information
 from get_courses import crawl_website
 from get_events import get_events_by_dates
+from custom_agents import create_course_agent, create_event_agent, get_course_dataframes, get_event_dataframes
 
 os.environ["OPENAI_API_KEY"] = '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'
 
@@ -47,6 +48,7 @@ class ConversationAgent:
             print(f"Agent changed from task {self.current_task} to task {task}.")
         # TODO: initialize agent according to task
         self.current_task = task
+        os.makedirs(os.path.join(os.getcwd(), "data"), exist_ok=True)
         dataframes = []
         start_time = time.time()
         if task == "courses":
@@ -59,8 +61,11 @@ class ConversationAgent:
                 info_dataframe, section_dataframe = crawl_website()
                 info_dataframe.to_csv(info_path, index=False)
                 section_dataframe.to_csv(section_path, index=False)
-            dataframes.append(info_dataframe)
-            dataframes.append(section_dataframe)
+            section, info = get_course_dataframes(info_path=info_path, section_path=section_path)
+            self.agent = create_course_agent(llm=OpenAI(temperature=0), 
+                                             df_course_info=info, 
+                                             df_course_section=section,
+                                             verbose=True)
         elif task == "events":
             # get the date of today
             today = datetime.today().strftime('%Y-%m-%d')
@@ -72,20 +77,24 @@ class ConversationAgent:
             else:
                 events = get_events_by_dates(today, period)
                 events.to_csv(path, index=False)
-            dataframes.append(events)
+            section, info = get_event_dataframes(path=path)
+            self.agent = create_event_agent(llm=OpenAI(temperature=0), 
+                                            df_event_section=section,
+                                            df_event_info=info,
+                                            verbose=True)
         else:
             raise ValueError(f"Task {task} is not supported yet.")
         cost = time.time() - start_time
-        print(f"Time cost for crawling data: {cost}")
+        print(f"Time cost for initiation: {cost}")
         return gr.update(visible = True), gr.update(visible = False), gr.update(placeholder=place), gr.update(value=label_clear)
     
     def run_text(self, text, state):
         res = self.agent.run({"input": text.strip()})
-        response = res['output']
+        response = res
         state = state + [(text, response)]
-        print(f"\nProcessed run_text, Input text: {text}\nCurrent state: {state}\n"
-              f"Current Memory: {self.agent.memory.buffer}")
-        
+        print(f"\nProcessed run_text, Input text: {text}\nCurrent state: {state}\n")
+            #   f"Current Memory: {self.agent.memory.buffer}")
+        self.memory.save_context(inputs=text, outputs=response)
         return state, state
     
 
