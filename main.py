@@ -1,10 +1,7 @@
 import os
 import argparse
 import gradio as gr
-from conversationbot import ConversationBot
 from conversationagent import ConversationAgent
-
-os.environ["OPENAI_API_KEY"] = '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'
 
 def change_task():
     return gr.update(visible=True)

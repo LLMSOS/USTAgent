@@ -13,8 +13,6 @@ from get_courses import crawl_website
 from get_events import get_events_by_dates
 from custom_agents import create_course_agent, create_event_agent, get_course_dataframes, get_event_dataframes
 
-os.environ["OPENAI_API_KEY"] = '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'
-
 class ConversationAgent:
     """ The conversation agent class initializes agent according to different task.
         Currently, we only support the tasks related to information that can be stored into a pandas dataframe.
@@ -31,9 +29,6 @@ class ConversationAgent:
         self.current_task = task
         
         self.llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo")
-        # self.llm = GPT4F_LLM(model_name='theb')
-        # callbacks = [StreamingStdOutCallbackHandler()]
-        # self.llm = GPT4All(model="D:\gpt4all\models\ggml-gpt4all-j-v1.3-groovy.bin", backend='gptj', verbose=True, n_threads=8)
         self.memory = ConversationSummaryBufferMemory(llm=OpenAI(temperature=0), memory_key="chat_history", output_key='output')
         self.agent = None
 
@@ -49,7 +44,6 @@ class ConversationAgent:
         # TODO: initialize agent according to task
         self.current_task = task
         os.makedirs(os.path.join(os.getcwd(), "data"), exist_ok=True)
-        dataframes = []
         start_time = time.time()
         if task == "courses":
             info_path = os.path.join(os.getcwd(), "data", "courses_info.csv")
@@ -94,7 +88,6 @@ class ConversationAgent:
         state = state + [(text, response)]
         print(f"\nProcessed run_text, Input text: {text}\nCurrent state: {state}\n")
             #   f"Current Memory: {self.agent.memory.buffer}")
-        self.memory.save_context(inputs=text, outputs=response)
         return state, state
     
 
