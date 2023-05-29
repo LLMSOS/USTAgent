@@ -1,19 +1,46 @@
 # USTAgent
 
-The first project!!!
+**UST agent can answer the questions related to the information of the course and daily events in HKUST.**
 
-Let's Go!!!
+## Introduction
+The required packages are listed in requirements.txt. To install the required packages, please run the following command in the terminal:
 
+```bash
+pip install -r requirements.txt
+```
 
-# Scraping.py
+**To start running**, please run the following command in the terminal. You need to type in your OpenAI API key as indicated.
 
-Automatically scrap all the course information by URL and save in .pickle format under the folder ./Courseinfo, named by course code.
+```bash
+python main.py --key=YOUR_OpenAI_API_KEY
+```
 
-# load.py
+## Basic Functions
 
-load the saved .pickle files
+After running the code, the agent will provide a link to the local host at the terminal. You can click the link to start chatting with the agent.
 
-# gpt_api.py
+At the beginning, the agent will ask you to choose the function you want to use. You can choose from asking courses or events.
 
-use the official openai api to set up connection with chatgpt.
-pip install openai
+![function_selection](figures/function_selection.png)
+
+### 1. Course Information
+
+After selecting the ***courses*** option, you may ask for information about courses:
+
+![function_selection](figures/courses.png)
+
+### 2. Event Inforamtion
+
+After selecting the ***events*** option, you may ask for information about events:
+
+![function_selection](figures/events.png)
+
+Feel free to ask the agent any questions about the courses or events in HKUST!
+
+## Contributors
+This project is contributed by:
+
+- WU Bohuai ([VongolaWu](https://github.com/VongolaWu))
+- Liu Hanmo ([liuhanmo123](https://github.com/liuhanmo321))
+- Wang Wenliang ([wwangbl](https://github.com/wwangbl))
+- Lu Yijun ([ylubj](https://github.com/ylubj))

@@ -1,0 +1,7 @@
+langchain==0.0.162
+gradio
+numpy
+opencv-python
+openai
+charset_normalizer
+tiktoken
