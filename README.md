@@ -36,3 +36,11 @@ After selecting the ***events*** option, you may ask for information about event
 ![function_selection](figures/events.png)
 
 Feel free to ask the agent any questions about the courses or events in HKUST!
+
+## Contributors
+This project is contributed by:
+
+- WU Bohuai ([VongolaWu](https://github.com/VongolaWu))
+- Liu Hanmo ([liuhanmo123](https://github.com/liuhanmo321))
+- Wang Wenliang ([wwangbl](https://github.com/wwangbl))
+- Lu Yijun ([ylubj](https://github.com/ylubj))
