@@ -1,6 +1,6 @@
 # USTAgent
 
-**UST agent can answer the questions related to the information of the course and daily events in HKUST.**
+**UST agent utilizes ChatGPT to answer the questions related to the information of any course and daily events in HKUST.**
 
 ## Introduction
 The required packages are listed in requirements.txt. To install the required packages, please run the following command in the terminal:
